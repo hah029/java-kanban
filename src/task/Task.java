@@ -1,10 +1,12 @@
+package task;
+
 import java.util.Objects;
 
 public class Task {
     private final int id;
     private String name;
     private String description;
-    private TaskStatus status;
+    protected TaskStatus status;
 
     private static int taskCounter = 0;
 
@@ -61,7 +63,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "task.Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

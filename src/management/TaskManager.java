@@ -1,25 +1,25 @@
+package management;
+
+import task.Epic;
+import task.Subtask;
+import task.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TaskManager {
-    private final HashMap<Integer, Task> taskCollection;
-    private final HashMap<Integer, Subtask> subtaskCollection;
-    private final HashMap<Integer, Epic> epicCollection;
+    private final HashMap<Integer, Task> taskCollection = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtaskCollection = new HashMap<>();
+    private final HashMap<Integer, Epic> epicCollection = new HashMap<>();
 
-    public TaskManager() {
-        taskCollection = new HashMap<>();
-        subtaskCollection = new HashMap<>();
-        epicCollection = new HashMap<>();
+    public ArrayList<Task> getTasks() {
+        return new ArrayList<>(taskCollection.values());
     }
-
-    public HashMap<Integer, Task> getTasks() {
-        return taskCollection;
+    public ArrayList<Subtask> getSubtasks() {
+        return new ArrayList<>(subtaskCollection.values());
     }
-    public HashMap<Integer, Subtask> getSubtasks() {
-        return subtaskCollection;
-    }
-    public HashMap<Integer, Epic> getEpics() {
-        return epicCollection;
+    public ArrayList<Epic> getEpics() {
+        return new ArrayList<>(epicCollection.values());
     }
 
     public void clearTasks() {
@@ -27,9 +27,13 @@ public class TaskManager {
     }
     public void clearSubtasks() {
         subtaskCollection.clear();
+        for (Epic e : epicCollection.values()) {
+            e.updateStatus();
+        }
     }
     public void clearEpics() {
         epicCollection.clear();
+        clearSubtasks();
     }
 
     public Task getTaskById(int id) {
@@ -128,7 +132,7 @@ public class TaskManager {
         }
     }
 
-    public HashMap<Integer, Subtask> getEpicSubtasks(int id) {
+    public ArrayList<Subtask> getEpicSubtasks(int id) {
         if (!epicCollection.containsKey(id)) {
             System.out.println("Эпик c id=" + id + " не найден.");
             return null;

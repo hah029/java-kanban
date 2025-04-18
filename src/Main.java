@@ -3,20 +3,20 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Старт программы");
 
-        TaskManager tm = new TaskManager();
+        management.TaskManager tm = new management.TaskManager();
 
         // ====== Testing begins
         // ------ create objects
         System.out.println("Создаем объекты для теста...");
-        int t1Id = tm.addTask(new Task("задача 1", "описание", TaskStatus.NEW));
-        int t2Id = tm.addTask(new Task("задача 2", "описание", TaskStatus.NEW));
+        int t1Id = tm.addTask(new task.Task("задача 1", "описание", task.TaskStatus.NEW));
+        int t2Id = tm.addTask(new task.Task("задача 2", "описание", task.TaskStatus.NEW));
 
-        int e1Id = tm.addEpic(new Epic("эпик 1", "описание"));
-        int e1s1Id = tm.addSubtask(new Subtask("подзадача 1", "описание", TaskStatus.NEW, e1Id));
-        int e1s2Id = tm.addSubtask(new Subtask("подзадача 2", "описание", TaskStatus.NEW, e1Id));
+        int e1Id = tm.addEpic(new task.Epic("эпик 1", "описание"));
+        int e1s1Id = tm.addSubtask(new task.Subtask("подзадача 1", "описание", task.TaskStatus.NEW, e1Id));
+        int e1s2Id = tm.addSubtask(new task.Subtask("подзадача 2", "описание", task.TaskStatus.NEW, e1Id));
 
-        int e2Id = tm.addEpic(new Epic("эпик 2", "описание"));
-        int e2s1Id = tm.addSubtask(new Subtask("подзадача 3", "описание", TaskStatus.NEW, e2Id));
+        int e2Id = tm.addEpic(new task.Epic("эпик 2", "описание"));
+        int e2s1Id = tm.addSubtask(new task.Subtask("подзадача 3", "описание", task.TaskStatus.NEW, e2Id));
 
         // ------ print object lists
         System.out.println("Печатаем созданные задачи:");
@@ -30,24 +30,24 @@ public class Main {
 
         // ------ update object status
         System.out.println("Обновляем статус задач на IN_PROGRESS...");
-        Task t1 = tm.getTaskById(t1Id);
-        t1.setStatus(TaskStatus.IN_PROGRESS);
+        task.Task t1 = tm.getTaskById(t1Id);
+        t1.setStatus(task.TaskStatus.IN_PROGRESS);
         tm.updateTask(t1);
 
-        Task t2 = tm.getTaskById(t2Id);
-        t2.setStatus(TaskStatus.IN_PROGRESS);
+        task.Task t2 = tm.getTaskById(t2Id);
+        t2.setStatus(task.TaskStatus.IN_PROGRESS);
         tm.updateTask(t2);
 
-        Subtask s1 = tm.getSubtaskById(e1s1Id);
-        s1.setStatus(TaskStatus.IN_PROGRESS);
+        task.Subtask s1 = tm.getSubtaskById(e1s1Id);
+        s1.setStatus(task.TaskStatus.IN_PROGRESS);
         tm.updateSubtask(s1);
 
-        Subtask s2 = tm.getSubtaskById(e1s2Id);
-        s2.setStatus(TaskStatus.IN_PROGRESS);
+        task.Subtask s2 = tm.getSubtaskById(e1s2Id);
+        s2.setStatus(task.TaskStatus.IN_PROGRESS);
         tm.updateSubtask(s2);
 
-        Subtask s3 = tm.getSubtaskById(e2s1Id);
-        s3.setStatus(TaskStatus.IN_PROGRESS);
+        task.Subtask s3 = tm.getSubtaskById(e2s1Id);
+        s3.setStatus(task.TaskStatus.IN_PROGRESS);
         tm.updateSubtask(s3);
 
         System.out.println("Печатаем обновленные задачи:");
@@ -62,6 +62,7 @@ public class Main {
         // ------ remove object status
         tm.removeTaskById(t1Id);
         tm.removeEpicById(e1Id);
+        tm.removeSubtaskById(e2s1Id);
 
         System.out.println("Печатаем задачи после удаления:");
         System.out.println(tm.getTasks());
