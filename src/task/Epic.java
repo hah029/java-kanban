@@ -25,10 +25,17 @@ public class Epic extends Task {
         updateStatus();
     }
 
+    public void clearSubtaskList() {
+        if (subtaskList.isEmpty()) {
+            return;
+        }
+        subtaskList.clear();
+        updateStatus();
+    }
+
     @Override
     public void setStatus(TaskStatus status) {
         System.out.println("Ошибка. Невозможно напрямую изменить статус эпика.");
-        return;
     }
 
     public ArrayList<Subtask> getSubtaskList() {

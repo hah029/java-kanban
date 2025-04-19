@@ -28,7 +28,7 @@ public class TaskManager {
     public void clearSubtasks() {
         subtaskCollection.clear();
         for (Epic e : epicCollection.values()) {
-            e.updateStatus();
+            e.clearSubtaskList();
         }
     }
     public void clearEpics() {
