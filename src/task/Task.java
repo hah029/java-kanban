@@ -41,6 +41,13 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description) {
+        this.id = getNextId();
+        this.name = name;
+        this.description = description;
+        this.status = TaskStatus.NEW;
+    }
+
     public static int getNextId() {
         return ++taskCounter;
     }
