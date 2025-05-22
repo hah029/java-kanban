@@ -1,7 +1,7 @@
 package utils;
 
 public class Node<T> {
-    final private T data;
+    private final T data;
     private Node<T> next;
     private Node<T> prev;
 
