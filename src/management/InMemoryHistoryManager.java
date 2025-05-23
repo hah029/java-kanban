@@ -37,20 +37,20 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
 
-        if (head == node && tail == node) { // only one element in list
+        if (node.getPrev() == null && node.getNext() == null) { // only one element in list
             head = null;
             tail = null;
             return;
         }
 
-        if (head == node) { // first element of list
+        if (node.getPrev() == null) { // first element of list
             Node<Task> next = node.getNext();
             head = next;
             next.setPrev(null);
             return;
         }
 
-        if (tail == node) { // last element of list
+        if (node.getNext() == null) { // last element of list
             Node<Task> prev = node.getPrev();
             tail = prev;
             prev.setNext(null);
@@ -62,7 +62,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> next = node.getNext();
         prev.setNext(next);
         next.setPrev(prev);
-        return;
     }
 
     private ArrayList<Task> getTasks() {
