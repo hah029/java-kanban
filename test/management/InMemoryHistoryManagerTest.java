@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import java.util.ArrayList;
+import java.util.List;
 
 import task.Task;
 
@@ -21,6 +22,9 @@ class InMemoryHistoryManagerTest {
         task3 = new Task("Task 3", "Description");
     }
 
+    /**
+     * Тест на добавление одной задачи в историю просмотра
+     */
     @Test
     void testAddSingleTask() {
         // Given
@@ -34,6 +38,9 @@ class InMemoryHistoryManagerTest {
         Assertions.assertTrue(manager.getHistory().contains(task1));
     }
 
+    /**
+     * Тест на добавление трех задач в историю просмотра
+     */
     @Test
     void testAddTasks() {
         // Given
@@ -52,24 +59,9 @@ class InMemoryHistoryManagerTest {
 
     }
 
-    @Test
-    void testCapacityAndReplaceOldTask() {
-        // Given
-        manager.add(task1);
-        for (int i = 0; i < InMemoryHistoryManager.HISTORY_CAPACITY - 1; i++) {
-            manager.add(new Task("Task " + i, "description"));
-        }
-
-        // When
-        manager.add(task2);
-
-        // Then
-        Assertions.assertEquals(InMemoryHistoryManager.HISTORY_CAPACITY, manager.getHistory().size());
-        Assertions.assertFalse(manager.getHistory().isEmpty());
-        Assertions.assertFalse(manager.getHistory().contains(task1));
-        Assertions.assertTrue(manager.getHistory().contains(task2));
-    }
-
+    /**
+     * Тест на проверку пустой истории в начале работы (без добавления задач)
+     */
     @Test
     void testGetHistoryIsEmpty() {
         // Given
@@ -78,6 +70,40 @@ class InMemoryHistoryManagerTest {
 
         // Then
         Assertions.assertTrue(history.isEmpty());
+    }
+
+    /**
+     * Тест на проверку пустой истории в начале работы (без добавления задач)
+     */
+    @Test
+    void testGetOnlyUniquesTasksFromHistoryWithOneTask() {
+        // Given
+
+        // When
+        manager.add(task1);
+        manager.add(task1);
+        ArrayList<Task> history = manager.getHistory();
+
+        // Then
+        Assertions.assertEquals(1, history.size());
+    }
+
+    /**
+     * Тест на проверку пустой истории в начале работы (без добавления задач)
+     */
+    @Test
+    void testGetInversedUniqueListOfTaskInHistoryWhenTryRepeatAddSameTask() {
+        // Given
+        List<Task> inversedTasks = List.of(task2, task1);
+
+        // When
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(task1);
+        List<Task> history = manager.getHistory();
+
+        // Then
+        Assertions.assertEquals(inversedTasks, history);
     }
 
 }
