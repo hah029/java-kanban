@@ -7,11 +7,16 @@ public class Task {
     private String name;
     private String description;
     protected TaskStatus status;
+    private final TaskTypes type;
 
     private static int taskCounter = 0;
 
     public String getName() {
         return name;
+    }
+
+    public TaskTypes getType() {
+        return type;
     }
 
     public void setName(String name) {
@@ -34,11 +39,22 @@ public class Task {
         this.status = status;
     }
 
+    public Task(Integer id, String name, String description, TaskStatus status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.type = TaskTypes.TASK;
+
+        setStartCounter(id);
+    }
+
     public Task(String name, String description, TaskStatus status) {
         this.id = getNextId();
         this.name = name;
         this.description = description;
         this.status = status;
+        this.type = TaskTypes.TASK;
     }
 
     public Task(String name, String description) {
@@ -46,10 +62,17 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = TaskStatus.NEW;
+        this.type = TaskTypes.TASK;
     }
 
     public static int getNextId() {
         return ++taskCounter;
+    }
+
+    static void setStartCounter(int newId) {
+        if (newId > taskCounter) {
+            taskCounter = newId;
+        }
     }
 
     public int getId() {
@@ -74,7 +97,27 @@ public class Task {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", type='" + type + '\'' +
                 ", status=" + status +
                 '}';
     }
+
+//    @Override
+//    public String toString() {
+//        return String.join(
+//                ",",
+//                String.valueOf(id),
+//                type.toString(),
+//                name,
+//                status.toString(),
+//                description,
+//                ""
+//        );
+//    }
+
+//    public void fromString(String str) {
+//        String[] attrs = str.split(",");
+//    }
+
+
 }
