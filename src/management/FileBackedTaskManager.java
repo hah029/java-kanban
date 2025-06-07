@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private static final String fileHeader = "id,type,name,status,description,epic";
+    private static final int fileAttrsCount = 6;
     private final String autosaveFilePath;
-    private final String fileHeader = "id,type,name,status,description,epic\n";
 
     public FileBackedTaskManager(String path) {
         super();
@@ -23,65 +24,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     }
 
-    private String toString(Task task) {
-
-        String id = String.valueOf(task.getId());
-        String type = task.getType().toString();
-        String name = task.getName();
-        String status = task.getStatus().toString();
-        String description = task.getDescription();
-
-        String epic;
-        if (task instanceof Subtask st) {
-            epic = String.valueOf(st.getEpicId());
-        } else {
-            epic = "";
-        }
-
-        return String.join(",", id, type, name, status, description, epic) + "\n";
-    }
-
-
-    private Task fromString(String value) {
-        String[] attrs = value.split(",");
-        if (attrs.length != 0) {
-
-            Integer id = Integer.parseInt(attrs[0]);
-            TaskTypes type = TaskTypes.valueOf(attrs[1]);
-            String name = attrs[2];
-            TaskStatus status = TaskStatus.valueOf(attrs[3]);
-            String description = attrs[4];
-
-            return switch (type) {
-                case TaskTypes.TASK -> new Task(id, name, description, status);
-                case TaskTypes.SUBTASK -> {
-                    int epic = Integer.parseInt(attrs[5]);
-                    yield new Subtask(id, name, description, status, epic);
-                }
-                case TaskTypes.EPIC -> new Epic(id, name, description, status);
-            };
-        }
-        return null;
-    }
-
     private void save() throws ManagerSaveException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.autosaveFilePath, StandardCharsets.UTF_8))) {
 
-            writer.write(fileHeader);
+            writer.write(fileHeader + "\n");
 
             ArrayList<Task> tasks = getTasks();
             for (Task task : tasks) {
-                writer.write(toString(task));
+                writer.write(task.toCsv());
             }
 
             ArrayList<Epic> epics = getEpics();
             for (Epic task : epics) {
-                writer.write(toString(task));
+                writer.write(task.toCsv());
             }
 
             ArrayList<Subtask> subtasks = getSubtasks();
             for (Subtask task : subtasks) {
-                writer.write(toString(task));
+                writer.write(task.toCsv());
             }
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
@@ -93,26 +53,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             while (reader.ready()) {
                 String line = reader.readLine();
-                if (line.equals(fileHeader.replace("\n", ""))) continue;
+                if (line.equals(fileHeader)) continue;
 
-                Task task = fromString(line);
+                Task task = Task.fromCsv(line, fileAttrsCount);
 
-                if (task != null) {
-                    switch (task.getType()) {
-                        case TaskTypes.TASK:
-                            addTask(task);
-                            break;
-                        case TaskTypes.SUBTASK:
-                            addSubtask((Subtask) task);
-                            break;
-                        case TaskTypes.EPIC:
-                            addEpic((Epic) task);
-                            break;
-                    }
+                switch (task.getType()) {
+                    case TaskTypes.TASK:
+                        addTask(task);
+                        break;
+                    case TaskTypes.SUBTASK:
+                        addSubtask((Subtask) task);
+                        break;
+                    case TaskTypes.EPIC:
+                        addEpic((Epic) task);
+                        break;
                 }
 
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             throw new ManagerLoadException(e.getMessage());
         }
     }

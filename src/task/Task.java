@@ -102,22 +102,38 @@ public class Task {
                 '}';
     }
 
-//    @Override
-//    public String toString() {
-//        return String.join(
-//                ",",
-//                String.valueOf(id),
-//                type.toString(),
-//                name,
-//                status.toString(),
-//                description,
-//                ""
-//        );
-//    }
+    public String toCsv() {
 
-//    public void fromString(String str) {
-//        String[] attrs = str.split(",");
-//    }
+        String id = String.valueOf(this.getId());
+        String type = this.getType().toString();
+        String name = this.getName();
+        String status = this.getStatus().toString();
+        String description = this.getDescription();
+        String epic = "";
 
+        return String.join(",", id, type, name, status, description, epic) + "\n";
+    }
+
+    public static Task fromCsv(String value, int attrsRequired) throws IllegalArgumentException {
+        String[] attrs = value.split(",", -1);
+        if (attrs.length == attrsRequired) {
+            Integer id = Integer.parseInt(attrs[0]);
+            TaskTypes type = TaskTypes.valueOf(attrs[1]);
+            String name = attrs[2];
+            TaskStatus status = TaskStatus.valueOf(attrs[3]);
+            String description = attrs[4];
+
+            return switch (type) {
+                case TaskTypes.TASK -> new Task(id, name, description, status);
+                case TaskTypes.SUBTASK -> {
+                    int epic = Integer.parseInt(attrs[5]);
+                    yield new Subtask(id, name, description, status, epic);
+                }
+                case TaskTypes.EPIC -> new Epic(id, name, description, status);
+            };
+        }
+
+        throw new IllegalArgumentException("Count of attributes is incorrect.");
+    }
 
 }

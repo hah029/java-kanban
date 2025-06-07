@@ -60,4 +60,17 @@ public class Subtask extends Task {
                 ", epicId=" + epicId +
                 '}';
     }
+
+    @Override
+    public String toCsv() {
+
+        String id = String.valueOf(this.getId());
+        String type = this.getType().toString();
+        String name = this.getName();
+        String status = this.getStatus().toString();
+        String description = this.getDescription();
+        String epic = String.valueOf(this.getEpicId());
+
+        return String.join(",", id, type, name, status, description, epic) + "\n";
+    }
 }
