@@ -5,7 +5,6 @@ import task.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final String fileHeader = "id,type,name,status,description,epic";
@@ -15,13 +14,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public FileBackedTaskManager(String path) {
         super();
         this.autosaveFilePath = path;
-
-        try {
-            loadFromFile(path);
-        } catch (ManagerLoadException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
-
+        loadFromFile(path);
     }
 
     private void save() throws ManagerSaveException {
@@ -48,7 +41,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public void loadFromFile(String path) throws ManagerLoadException {
+    public void loadFromFile(String path) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
 
             while (reader.ready()) {
@@ -78,123 +71,75 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public int addTask(Task task) {
         int id = super.addTask(task);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
         return id;
     }
 
     @Override
     public int addSubtask(Subtask subtask) {
         int id = super.addSubtask(subtask);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
         return id;
     }
 
     @Override
     public int addEpic(Epic epic) {
         int id = super.addEpic(epic);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
         return id;
     }
 
     @Override
     public void clearTasks() {
         super.clearTasks();
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void clearSubtasks() {
         super.clearSubtasks();
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void clearEpics() {
         super.clearEpics();
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void removeTaskById(int id) {
         super.removeTaskById(id);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void removeSubtaskById(int id) {
         super.removeSubtaskById(id);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 
     @Override
     public void removeEpicById(int id) {
         super.removeEpicById(id);
-        try {
-            save();
-        } catch (ManagerSaveException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
+        save();
     }
 }
