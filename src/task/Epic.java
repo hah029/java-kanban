@@ -6,9 +6,22 @@ import java.util.HashMap;
 public class Epic extends Task {
 
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private final TaskTypes type;
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
+        this.type = TaskTypes.EPIC;
+    }
+
+    public Epic(Integer id, String name, String description, TaskStatus status) {
+        super(id, name, description, status);
+        this.type = TaskTypes.EPIC;
+        setStartCounter(id);
+    }
+
+    @Override
+    public TaskTypes getType() {
+        return type;
     }
 
     public void addSubtask(Subtask subtask) {
