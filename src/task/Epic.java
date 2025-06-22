@@ -1,12 +1,14 @@
 package task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Epic extends Task {
 
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     private final TaskTypes type;
+//    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
@@ -29,6 +31,8 @@ public class Epic extends Task {
         subtask.setEpicId(this.getId());
         updateStatus();
     }
+
+
 
     public void removeSubtaskById(int id) {
         if (!subtaskList.containsKey(id)) {
@@ -87,5 +91,56 @@ public class Epic extends Task {
                 ", status=" + getStatus() +
                 ", subtaskList.count=" + subtaskList.size() +
                 '}';
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return this.subtaskList.values()
+                .stream()
+                .map(Task::getEndTime)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder()).orElse(null);
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return this.subtaskList.values()
+                .stream()
+                .map(Task::getStartTime)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo).orElse(null);
+    }
+
+    @Override
+    public Duration getDuration() {
+        return this.subtaskList.values()
+                .stream()
+                .map(Task::getDuration)
+                .filter(Objects::nonNull)
+                .reduce(Duration.ZERO, Duration::plus);
+    }
+
+    @Override
+    public void setStartTime(LocalDateTime startTime) {
+        System.out.println("Ошибка. Невозможно напрямую изменить старт эпика.");
+    }
+
+    @Override
+    public void setDuration(Duration duration) {
+        System.out.println("Ошибка. Невозможно напрямую изменить длительность эпика.");
+    }
+
+    @Override
+    public String toCsv() {
+        String id = String.valueOf(this.getId());
+        String type = this.getType().toString();
+        String name = this.getName();
+        String status = this.getStatus().toString();
+        String description = this.getDescription();
+        String epic = "";
+        String startTime = "";
+        String duration = "";
+
+        return String.join(",", id, type, name, status, description, epic, startTime, duration) + "\n";
     }
 }

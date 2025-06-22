@@ -8,6 +8,8 @@ import task.TaskStatus;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +35,9 @@ class FileBackedTaskManagerTest {
         }
     }
 
+    /**
+     * Тест на сохранение и восстановление задачи из файлового хранилища
+     */
     @Test
     void saveOneTaskInStorage() {
         // Given
@@ -48,6 +53,9 @@ class FileBackedTaskManagerTest {
         assertNotNull(ts.getTaskById(taskId));
     }
 
+    /**
+     * Тест на сохранение и восстановление эпика из файлового хранилища
+     */
     @Test
     void saveOneEpicInStorage() {
         // Given
@@ -63,6 +71,9 @@ class FileBackedTaskManagerTest {
         assertNotNull(ts.getEpicById(epicId));
     }
 
+    /**
+     * Тест на сохранение и восстановление подзадачи из файлового хранилища
+     */
     @Test
     void saveOneSubtaskInStorage() {
         // Given
@@ -78,6 +89,9 @@ class FileBackedTaskManagerTest {
         assertNotNull(ts.getSubtaskById(subtaskId));
     }
 
+    /**
+     * Тест на корректное сохранение состояния после очистки списка задач
+     */
     @Test
     void saveClearTaskInStorage() {
         // Given
@@ -93,6 +107,9 @@ class FileBackedTaskManagerTest {
         assertEquals(0, ts.getTasks().size());
     }
 
+    /**
+     * Тест на корректное сохранение состояния после очистки списка подзадач
+     */
     @Test
     void saveClearSubtaskInStorage() {
         // Given
@@ -108,6 +125,9 @@ class FileBackedTaskManagerTest {
         assertEquals(0, ts.getSubtasks().size());
     }
 
+    /**
+     * Тест на корректное сохранение состояния после очистки списка эпиков
+     */
     @Test
     void saveClearEpicInStorage() {
         // Given
@@ -123,6 +143,9 @@ class FileBackedTaskManagerTest {
         assertEquals(0, ts.getEpics().size());
     }
 
+    /**
+     * Тест на совместное сохранение и восстановление всех типов задач
+     */
     @Test
     void saveAllTypesTaskInStorage() {
         // Given
@@ -150,6 +173,9 @@ class FileBackedTaskManagerTest {
         assertNotNull(ts.getEpicById(epic.getId()));
     }
 
+    /**
+     * Тест на сохранение обновленного состояния задачи в хранилище
+     */
     @Test
     void saveUpdateTaskInStorage() {
         // Given
@@ -164,5 +190,94 @@ class FileBackedTaskManagerTest {
         // Then
         ts = new FileBackedTaskManager(autosaveFilePath);
         assertEquals(TaskStatus.IN_PROGRESS, ts.getTaskById(task.getId()).getStatus());
+    }
+
+    /**
+     * Тест корректного преобразования задачи с временными параметрами в CSV-формат
+     */
+    @Test
+    void toCsvWhenTaskWithTimeThenCorrectFormat() {
+        // Given
+        Task task = new Task(1, "Task", "Description", TaskStatus.NEW);
+        task.setStartTime(LocalDateTime.of(2023, 1, 1, 10, 0));
+        task.setDuration(Duration.ofMinutes(30));
+
+        // When
+        String csv = task.toCsv();
+
+        // Then
+        String expected = "1,TASK,Task,NEW,Description,,2023-01-01T10:00,30\n";
+        assertEquals(expected, csv);
+    }
+
+    /**
+     * Тест корректного создания объекта задачи из CSV-строки
+     */
+    @Test
+    void fromCsvWhenValidTaskThenCorrectObject() {
+        // Given
+        String csv = "1,TASK,Task Name,NEW,Task Description,,2023-01-01T10:00,30";
+
+        // When
+        Task task = Task.fromCsv(csv);
+
+        // Then
+        assertNotNull(task);
+        assertEquals(1, task.getId());
+        assertEquals("Task Name", task.getName());
+        assertEquals(TaskStatus.NEW, task.getStatus());
+        assertEquals(LocalDateTime.of(2023, 1, 1, 10, 0), task.getStartTime());
+        assertEquals(Duration.ofMinutes(30), task.getDuration());
+    }
+
+    /**
+     * Тест корректного создания подзадачи из CSV-строки с указанием идентификатора эпика
+     */
+    @Test
+    void fromCsvWhenSubtaskThenCorrectEpicId() {
+        // Given
+        String csv = "2,SUBTASK,Subtask Name,DONE,Subtask Description,1,2023-01-01T11:00,45";
+
+        // When
+        Task task = Task.fromCsv(csv);
+
+        // Then
+        assertInstanceOf(Subtask.class, task);
+        Subtask subtask = (Subtask) task;
+        assertEquals(2, subtask.getId());
+        assertEquals(1, subtask.getEpicId());
+        assertEquals(LocalDateTime.of(2023, 1, 1, 11, 0), subtask.getStartTime());
+        assertEquals(Duration.ofMinutes(45), subtask.getDuration());
+    }
+
+    /**
+     * Тест обработки CSV-строки с отсутствующими временными параметрами
+     */
+    @Test
+    void fromCsvWhenMissingTimeFieldsThenHandleGracefully() {
+        // Given
+        String csv = "3,TASK,Task Without Time,NEW,Description,,,";
+
+        // When
+        Task task = Task.fromCsv(csv);
+
+        // Then
+        assertNotNull(task);
+        assertEquals(3, task.getId());
+        assertEquals("Task Without Time", task.getName());
+        assertNull(task.getStartTime());
+        assertNull(task.getDuration());
+    }
+
+    /**
+     * Тест обработки некорректного CSV-формата при создании задачи
+     */
+    @Test
+    void fromCsvWhenInvalidFormatThenThrowException() {
+        // Given
+        String invalidCsv = "invalid,format";
+
+        // When-Then
+        assertThrows(IllegalArgumentException.class, () -> Task.fromCsv(invalidCsv));
     }
 }
