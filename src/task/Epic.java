@@ -8,7 +8,6 @@ public class Epic extends Task {
 
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     private final TaskTypes type;
-//    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
@@ -31,8 +30,6 @@ public class Epic extends Task {
         subtask.setEpicId(this.getId());
         updateStatus();
     }
-
-
 
     public void removeSubtaskById(int id) {
         if (!subtaskList.containsKey(id)) {
@@ -113,11 +110,13 @@ public class Epic extends Task {
 
     @Override
     public Duration getDuration() {
-        return this.subtaskList.values()
-                .stream()
-                .map(Task::getDuration)
-                .filter(Objects::nonNull)
-                .reduce(Duration.ZERO, Duration::plus);
+        LocalDateTime startTime = this.getStartTime();
+        LocalDateTime endTime = this.getEndTime();
+
+        if (startTime != null && endTime != null) {
+            return Duration.between(startTime, endTime);
+        }
+        return null;
     }
 
     @Override

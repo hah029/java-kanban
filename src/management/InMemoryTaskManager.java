@@ -230,8 +230,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isOverlapping(Task task1, Task task2) {
-        if (task1.getStartTime() == null || task2.getStartTime() == null)
+        if (task1.getStartTime() == null || task2.getStartTime() == null) {
             return false;
+        }
 
         LocalDateTime start1 = task1.getStartTime();
         LocalDateTime end1 = task1.getEndTime();
@@ -243,15 +244,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void validateTaskOverlap(Task task) {
-        if (task.getStartTime() == null) return;
+        if (task.getStartTime() == null) {
+            return;
+        }
         boolean hasOverlap = prioritizedTasks.stream()
                 .filter(t -> t.getStartTime() != null)
                 .anyMatch(t -> isOverlapping(task, t));
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
+    public TreeSet<Task> getPrioritizedTasks() {
         return new TreeSet<>(prioritizedTasks);
     }
-
 }

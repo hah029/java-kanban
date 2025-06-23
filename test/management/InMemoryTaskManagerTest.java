@@ -178,7 +178,7 @@ class InMemoryTaskManagerTest {
         // When-Then
         assertNull(epic.getStartTime());
         assertNull(epic.getEndTime());
-        assertEquals(Duration.ZERO, epic.getDuration());
+        assertNull(epic.getDuration());
     }
 
     /**
