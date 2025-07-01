@@ -4,11 +4,9 @@ import task.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String fileHeader = "id,type,name,status,description,epic";
-    private static final int fileAttrsCount = 6;
+    private static final String fileHeader = "id,type,name,status,description,epic,startTime,duration";
     private final String autosaveFilePath;
 
     public FileBackedTaskManager(String path) {
@@ -19,22 +17,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() throws ManagerSaveException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.autosaveFilePath, StandardCharsets.UTF_8))) {
-
             writer.write(fileHeader + "\n");
 
-            ArrayList<Task> tasks = getTasks();
-            for (Task task : tasks) {
+            for (Epic epic : getEpics()) {
+                writer.write(epic.toCsv());
+            }
+            for (Task task : getTasks()) {
                 writer.write(task.toCsv());
             }
-
-            ArrayList<Epic> epics = getEpics();
-            for (Epic task : epics) {
-                writer.write(task.toCsv());
-            }
-
-            ArrayList<Subtask> subtasks = getSubtasks();
-            for (Subtask task : subtasks) {
-                writer.write(task.toCsv());
+            for (Subtask subtask : getSubtasks()) {
+                writer.write(subtask.toCsv());
             }
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
@@ -43,25 +35,32 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void loadFromFile(String path) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
+            reader.readLine();
 
             while (reader.ready()) {
                 String line = reader.readLine();
-                if (line.equals(fileHeader)) continue;
+                if (line.isEmpty()) continue;
 
-                Task task = Task.fromCsv(line, fileAttrsCount);
+                Task task = Task.fromCsv(line);
 
                 switch (task.getType()) {
-                    case TaskTypes.TASK:
+                    case TASK:
                         addTask(task);
                         break;
-                    case TaskTypes.SUBTASK:
+                    case SUBTASK:
                         addSubtask((Subtask) task);
                         break;
-                    case TaskTypes.EPIC:
+                    case EPIC:
                         addEpic((Epic) task);
                         break;
                 }
+            }
 
+            for (Subtask subtask : getSubtasks()) {
+                Epic epic = getEpicById(subtask.getEpicId());
+                if (epic != null) {
+                    epic.addSubtask(subtask);
+                }
             }
         } catch (IOException | IllegalArgumentException e) {
             throw new ManagerLoadException(e.getMessage());
