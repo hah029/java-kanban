@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
     private final HttpServer httpServer;
-    private final int PORT = 8080;
+    private static final int PORT = 8080;
 
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
