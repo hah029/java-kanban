@@ -3,36 +3,30 @@ package task;
 public class Subtask extends Task {
 
     private int epicId;
-    private final TaskTypes type;
 
     public Subtask(String name, String description, TaskStatus status, int epicId) {
-        super(name, description, status);
+        super(name, description, status, TaskTypes.SUBTASK);
         this.epicId = epicId;
-        this.type = TaskTypes.SUBTASK;
     }
 
     public Subtask(String name, String description, int epicId) {
-        super(name, description);
+        super(name, description, TaskStatus.NEW, TaskTypes.SUBTASK);
         this.epicId = epicId;
-        this.type = TaskTypes.SUBTASK;
     }
 
     public Subtask(String name, String description) {
-        super(name, description);
+        super(name, description, TaskStatus.NEW, TaskTypes.SUBTASK);
         this.epicId = -1;
-        this.type = TaskTypes.SUBTASK;
     }
 
     public Subtask(String name, String description, TaskStatus status) {
-        super(name, description, status);
+        super(name, description, status, TaskTypes.SUBTASK);
         this.epicId = -1;
-        this.type = TaskTypes.SUBTASK;
     }
 
     public Subtask(Integer id, String name, String description, TaskStatus status, int epicId) {
-        super(id, name, description, status);
+        super(id, name, description, status, TaskTypes.SUBTASK);
         this.epicId = epicId;
-        this.type = TaskTypes.SUBTASK;
         setStartCounter(id);
     }
 
@@ -47,7 +41,7 @@ public class Subtask extends Task {
 
     @Override
     public TaskTypes getType() {
-        return type;
+        return super.getType();
     }
 
     @Override

@@ -244,16 +244,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void validateTaskOverlap(Task task) {
-        if (task.getStartTime() == null) {
-            return;
-        }
+        if (task.getStartTime() == null) return;
         boolean hasOverlap = prioritizedTasks.stream()
                 .filter(t -> t.getStartTime() != null)
                 .anyMatch(t -> isOverlapping(task, t));
+
+        if (hasOverlap) {
+            throw new TaskTimeConflictException("Задача пересекается по времени с существующей");
+        }
     }
 
     @Override
     public TreeSet<Task> getPrioritizedTasks() {
         return new TreeSet<>(prioritizedTasks);
     }
+
 }

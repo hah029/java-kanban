@@ -82,12 +82,30 @@ public class Task {
         setStartCounter(id);
     }
 
+    public Task(Integer id, String name, String description, TaskStatus status, TaskTypes type) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.type = type;
+
+        setStartCounter(id);
+    }
+
     public Task(String name, String description, TaskStatus status) {
         this.id = getNextId();
         this.name = name;
         this.description = description;
         this.status = status;
         this.type = TaskTypes.TASK;
+    }
+
+    public Task(String name, String description, TaskStatus status, TaskTypes type) {
+        this.id = getNextId();
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.type = type;
     }
 
     public Task(String name, String description) {

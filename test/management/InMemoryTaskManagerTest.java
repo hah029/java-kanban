@@ -198,21 +198,17 @@ class InMemoryTaskManagerTest {
         task2.setStartTime(LocalDateTime.of(2023, 1, 1, 10, 0));
         task2.setDuration(Duration.ofMinutes(60)); // 10:00-11:00
 
-        Task task3 = new Task("Task 3", "Description");
-        task3.setStartTime(LocalDateTime.of(2023, 1, 1, 11, 30)); // 11:30-12:30
-        task3.setDuration(Duration.ofMinutes(60));
-
         // When
         manager.addTask(task1);
         manager.addTask(task2);
-        manager.addTask(task3);
+        
         List<Task> prioritized = new ArrayList<>(manager.getPrioritizedTasks());
 
         // Then
-        assertEquals(3, prioritized.size());
+        assertEquals(2, prioritized.size());
         assertEquals("Task 2", prioritized.get(0).getName()); // 10:00
-        assertEquals("Task 3", prioritized.get(1).getName()); // 11:30
-        assertEquals("Task 1", prioritized.get(2).getName()); // 12:00
+        assertEquals("Task 1", prioritized.get(1).getName()); // 12:00
+
     }
 
     /**
