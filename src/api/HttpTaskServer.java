@@ -1,6 +1,7 @@
 package api;
 
 import com.sun.net.httpserver.HttpServer;
+import management.Managers;
 import management.TaskManager;
 
 import java.io.IOException;
@@ -18,6 +19,12 @@ public class HttpTaskServer {
         httpServer.createContext("/epics", new EpicsHandler(manager));
         httpServer.createContext("/history", new HistoryHandler(manager));
         httpServer.createContext("/prioritized", new PrioritizedHandler(manager));
+    }
+
+    public static void main(String[] args) throws IOException {
+        TaskManager manager = Managers.getDefault();
+        HttpTaskServer server = new HttpTaskServer(manager);
+        server.start();
     }
 
     public void start() {
